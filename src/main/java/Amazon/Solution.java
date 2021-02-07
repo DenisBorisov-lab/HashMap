@@ -16,9 +16,11 @@ public class Solution {
         String newFile = go.fileReader("test2");
 
         Map<String, Data> oldMap = new HashMap<>();
-        oldMap = toValues(oldFile, oldMap);;
+        enrichMapValues(oldFile, oldMap);
+
         Map<String, Data> newMap = new HashMap<>();
-        newMap = toValues(newFile, newMap);
+        enrichMapValues(newFile, newMap);
+
         newPackages(oldMap, newMap);
         System.out.println("--------------------------------------------------");
         IncreasedPackages(oldMap, newMap);
@@ -40,22 +42,18 @@ public class Solution {
         return data;
     }
 
-    public static Map<String, Data> toValues(String str, Map<String, Data> map){
+    public static void enrichMapValues(String str, Map<String, Data> map){
         String[] appending = str.split("\n");
         for(int i  =0; i < appending.length; i++){
             String[] line = appending[i].split(";");
             map.put(line[0], new Data(line[1], line[2]));
         }
-        return map;
     }
 
     public static void newPackages(Map<String, Data> oldMap, Map<String, Data> newMap) {
-        Set<String> newKeys = newMap.keySet();
-        String[] arrayNewKeys = newKeys.toArray(new String[newKeys.size()]);
-        System.out.println("New packages: ");
-        for (int i = 0; i < newKeys.size(); i++){
-            if (!oldMap.containsKey(arrayNewKeys[i])){
-                System.out.println("-->" +  " " + arrayNewKeys[i]);
+        for (String key : newMap.keySet()) {
+            if (!oldMap.containsKey(key)){
+                System.out.println("-->" +  " " + key);
             }
         }
     }
@@ -85,36 +83,42 @@ public class Solution {
         final Data newPackages = newMap.get(key);
         String oldVersion = oldPackages.getVersion();
         String newVersion = newPackages.getVersion();
-        StringBuilder oldNumber = new StringBuilder();
-        StringBuilder newNumber = new StringBuilder();
-        for (int i = 0; i < oldVersion.length(); i++){
-            oldNumber.append(oldVersion.charAt(i));
-            newNumber.append(newVersion.charAt(i));
-            i++;
+        oldVersion = replacement(oldVersion);
+        newVersion = replacement(newVersion);
+        String[] oldVersionArray = oldVersion.split(";");
+        String[] newVersionArray = newVersion.split(";");
+        boolean result = false;
+        for (int i = 0; i < oldVersionArray.length; i++){
+            if (Integer.parseInt(newVersionArray[i]) > Integer.parseInt(oldVersionArray[i])){
+                result = true;
+                break;
+            }else if (Integer.parseInt(newVersionArray[i]) < Integer.parseInt(oldVersionArray[i])){
+                result =  false;
+                break;
+            }
         }
-        if (Integer.parseInt(String.valueOf(newNumber)) > Integer.parseInt(String.valueOf(oldNumber))){
-            return true;
-        }else{
-            return false;
-        }
+        return result;
     }
     public static boolean downing(String key, Map<String, Data> oldMap, Map<String, Data> newMap ){
         final Data oldPackages = oldMap.get(key);
         final Data newPackages = newMap.get(key);
         String oldVersion = oldPackages.getVersion();
         String newVersion = newPackages.getVersion();
-        StringBuilder oldNumber = new StringBuilder();
-        StringBuilder newNumber = new StringBuilder();
-        for (int i = 0; i < oldVersion.length(); i++){
-            oldNumber.append(oldVersion.charAt(i));
-            newNumber.append(newVersion.charAt(i));
-            i++;
+        oldVersion = replacement(oldVersion);
+        newVersion = replacement(newVersion);
+        String[] oldVersionArray = oldVersion.split(";");
+        String[] newVersionArray = newVersion.split(";");
+        boolean result = false;
+        for (int i = 0; i < oldVersionArray.length; i++){
+            if (Integer.parseInt(newVersionArray[i]) < Integer.parseInt(oldVersionArray[i])){
+                result = true;
+                break;
+            }else if (Integer.parseInt(newVersionArray[i]) > Integer.parseInt(oldVersionArray[i])){
+                result =  false;
+                break;
+            }
         }
-        if (Integer.parseInt(String.valueOf(newNumber)) < Integer.parseInt(String.valueOf(oldNumber))){
-            return true;
-        }else{
-            return false;
-        }
+        return result;
     }
     public static void differentCommits(Map<String, Data> oldMap, Map<String, Data> newMap){
         System.out.println("Packages with the same version, but with different commits: ");
@@ -133,10 +137,21 @@ public class Solution {
         String newVersion = newPackages.getVersion();
         String oldCommit = oldPackages.getCommit();
         String newCommit = newPackages.getCommit();
-        if (oldMap.containsKey(key) && oldVersion.equals(newVersion) && oldCommit != newCommit){
+        if (oldMap.containsKey(key) && oldVersion.equals(newVersion) && !oldCommit.equals(newCommit)){
             return true;
         }else{
             return false;
         }
+    }
+    public static String replacement(String message){
+        String[] intermediate = message.split("");
+        StringBuilder fics = new StringBuilder();
+        for (int i = 0; i < intermediate.length; i++){
+            if (intermediate[i].equals(".")){
+                intermediate[i] = ";";
+            }
+            fics.append(intermediate[i]);
+        }
+        return fics.toString();
     }
 }
