@@ -83,10 +83,8 @@ public class Solution {
         final Data newPackages = newMap.get(key);
         String oldVersion = oldPackages.getVersion();
         String newVersion = newPackages.getVersion();
-        oldVersion = replacement(oldVersion);
-        newVersion = replacement(newVersion);
-        String[] oldVersionArray = oldVersion.split(";");
-        String[] newVersionArray = newVersion.split(";");
+        String[] oldVersionArray = oldVersion.split("\\.");
+        String[] newVersionArray = newVersion.split("\\.");
         boolean result = false;
         for (int i = 0; i < oldVersionArray.length; i++){
             if (Integer.parseInt(newVersionArray[i]) > Integer.parseInt(oldVersionArray[i])){
@@ -104,10 +102,8 @@ public class Solution {
         final Data newPackages = newMap.get(key);
         String oldVersion = oldPackages.getVersion();
         String newVersion = newPackages.getVersion();
-        oldVersion = replacement(oldVersion);
-        newVersion = replacement(newVersion);
-        String[] oldVersionArray = oldVersion.split(";");
-        String[] newVersionArray = newVersion.split(";");
+        String[] oldVersionArray = oldVersion.split("\\.");
+        String[] newVersionArray = newVersion.split("\\.");
         boolean result = false;
         for (int i = 0; i < oldVersionArray.length; i++){
             if (Integer.parseInt(newVersionArray[i]) < Integer.parseInt(oldVersionArray[i])){
@@ -142,16 +138,5 @@ public class Solution {
         }else{
             return false;
         }
-    }
-    public static String replacement(String message){
-        String[] intermediate = message.split("");
-        StringBuilder fics = new StringBuilder();
-        for (int i = 0; i < intermediate.length; i++){
-            if (intermediate[i].equals(".")){
-                intermediate[i] = ";";
-            }
-            fics.append(intermediate[i]);
-        }
-        return fics.toString();
     }
 }
